@@ -1,0 +1,56 @@
+﻿@model GB_Customers.Models.Customer
+
+@{
+    ViewBag.Title = "Customer Consent";
+}
+<hr />
+<img src="~/img/GlennonBrothers.PNG" style="width:300px;height:50px" />
+
+
+
+@using (Html.BeginForm("AddOrEdit", "Customer", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+       <div style="text-decoration:solid" >
+           <p>
+               <br /><br />
+               Hi,
+               <br /><br />
+               To subscribe to the Glennon Brothers Stock List, please confirm your email address below:
+         </p>
+      </div>
+       <div class="form-horizontal">
+
+           <hr />
+           @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+           <h4 class="col-md-offset-2 col-md-10">Confirm your Email</h4>
+           <div class="form-group">
+               @Html.LabelFor(model => model.email, "Email", htmlAttributes: new { @class = "control-label col-md-2 ", })
+               <div class="col-md-10">
+                   @Html.EditorFor(model => model.email, new { htmlAttributes = new { @class = "form-control" } })
+                   @Html.ValidationMessageFor(model => model.email, "", new { @class = "text-danger" })
+               </div>
+           </div>
+           <div class="form-group">
+               <div class="col-md-offset-2 col-md-10">
+                   <input type="submit" value="Submit" class="btn  btn-success" />
+               </div>
+           </div>
+           <div class="form-group">
+               <div class=" col-md-offset-2 col-md-10">
+                   <label class="label-success">@ViewBag.SuccessMessage</label>
+               </div>
+           </div>
+           <div class="form-group">
+               <div class=" col-md-offset-2 col-md-10">
+                   <label class="label-danger">@ViewBag.ErrorMessage</label>
+               </div>
+           </div>
+
+
+       </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
