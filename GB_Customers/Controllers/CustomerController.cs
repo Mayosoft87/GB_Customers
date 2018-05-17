@@ -10,8 +10,12 @@ using GB_Customers.Models;
 
 namespace GB_Customers.Controllers
 {
+
+ 
     public class CustomerController : Controller
     {
+        private String emailGroup = "Glennon Brothers Stock List";
+
 
         /// <summary>
         /// Inicializaction of the View
@@ -25,7 +29,7 @@ namespace GB_Customers.Controllers
             return View(customerModel);
         }
         /// <summary>
-        /// Allow anonymous to send the data
+        /// Allow anonymous to save the email on the database
         /// </summary>
         /// <param name="email">String</param>
         /// <returns>View</returns>
@@ -43,7 +47,7 @@ namespace GB_Customers.Controllers
                     customerModel.active = true;
                     customerModel.created = DateTime.Now;
                     customerModel.lastUpdate = DateTime.Now;
-                    customerModel.distributionGroup = "Glennon Brothers Stock List";
+                    customerModel.distributionGroup = emailGroup;
                     if (!dbModel.Customers.Any(c => c.email == customerModel.email && c.distributionGroup == customerModel.distributionGroup))
                     {
                         dbModel.Customers.Add(customerModel);
@@ -58,6 +62,36 @@ namespace GB_Customers.Controllers
                 ViewBag.ErrorMessage = e.Message;
             }
             return View("Confirm");
+        }
+        /// <summary>
+        /// New method to unsubscribe
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        [AllowAnonymous]
+        public ActionResult Unsubscribe(String email)
+        {
+            try
+            {
+                Customer customerModel = new Customer();
+                Encryption objDeco = new Encryption();
+                String emailDecrypt = objDeco.EmailDecrypt(email);
+                using (CustomerConsentEntities dbModel = new CustomerConsentEntities())
+                {
+                    dbModel.Database.Connection.Open();
+                    var update = dbModel.Customers.SingleOrDefault(c => c.email == emailDecrypt && c.distributionGroup == emailGroup);
+                    update.active = false;
+                    update.lastUpdate = DateTime.Now;
+                    dbModel.Customers.Add(update);
+                    dbModel.SaveChanges();
+                }
+                ViewBag.ErrorMessage = "";
+            }
+            catch (Exception e)
+            {
+                ViewBag.ErrorMessage = e.Message;
+            }
+            return View("Unsubscribe");
         }
 
         /// <summary>
